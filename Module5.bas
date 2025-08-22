@@ -14,6 +14,9 @@ Sub AddBudgetDropdownToToolbar()
     Dim btnBudget As CommandBarButton
     Dim btnDonation As CommandBarButton
     Dim btnDashboard As CommandBarButton
+    Dim btnStorage As CommandBarButton
+    Dim btnEOY As CommandBarButton
+    Dim btnOutliers As CommandBarButton
     
     ' Access the Worksheet Menu Bar
     Set bar = Application.CommandBars("Worksheet Menu Bar")
@@ -21,6 +24,7 @@ Sub AddBudgetDropdownToToolbar()
         MsgBox "The 'Worksheet Menu Bar' was not found.", vbCritical
         Exit Sub
     End If
+    
     ' Remove existing "Budget Tools" dropdown if present
     For Each existingCtrl In bar.Controls
         If existingCtrl.caption = "Budget Tools" Then
@@ -28,50 +32,60 @@ Sub AddBudgetDropdownToToolbar()
             Exit For
         End If
     Next existingCtrl
+    
     ' Add new dropdown menu
     Set dropdown = bar.Controls.Add(Type:=msoControlPopup, Temporary:=True)
     With dropdown
         .caption = "Budget Tools"
         .Tag = "BudgetToolsDropdown"
     End With
-    ' Add "Open Budget Form" item
+    
+    ' Add "Open Budget Form" item - Data Entry Form
     Set btnBudget = dropdown.Controls.Add(Type:=msoControlButton)
     With btnBudget
         .caption = "Open Budget Form"
         .onAction = "ShowBudgetForm"
-        .faceId = 1594
+        .faceId = 2178  ' Form/Data Entry icon
     End With
     
-    ' Add "Open hidden Dashboard" item
+    ' Add "Open hidden Dashboard" item - Charts and Visual Data
     Set btnDashboard = dropdown.Controls.Add(Type:=msoControlButton)
     With btnDashboard
         .caption = "View Dashboard"
         .onAction = "ShowDashboardSheet"
-        .faceId = 984
+        .faceId = 420   ' Chart/Graph icon
     End With
     
-    ' Add "Open hidden Donation Aggregate" item
-    Set btnDashboard = dropdown.Controls.Add(Type:=msoControlButton)
-    With btnDashboard
+    ' Add "Open hidden Donation Aggregate" item - Charitable Donations
+    Set btnDonation = dropdown.Controls.Add(Type:=msoControlButton)
+    With btnDonation
         .caption = "Donations Aggregate"
         .onAction = "CreateDonationsAggregateSilent"
-        .faceId = 984
+        .faceId = 1007  ' Heart/Charity icon
     End With
     
-    ' Add "Open Storage Form" item
-    Set btnDonation = dropdown.Controls.Add(Type:=msoControlButton)
-    With btnDonation
+    ' Add "Open Storage Form" item - Inventory Management
+    Set btnStorage = dropdown.Controls.Add(Type:=msoControlButton)
+    With btnStorage
         .caption = "Shopping/Storage"
         .onAction = "ShowStorage_Frm"
-        .faceId = 1594
+        .faceId = 1181  ' Box/Package icon for inventory
     End With
     
-    ' Add "Show End Of Year Aggregate" item
-    Set btnDonation = dropdown.Controls.Add(Type:=msoControlButton)
-    With btnDonation
+    ' Add "Show End Of Year Aggregate" item - Summary Reports
+    Set btnEOY = dropdown.Controls.Add(Type:=msoControlButton)
+    With btnEOY
         .caption = "View EOY Aggregate"
         .onAction = "SumEOYTotals"
-        .faceId = 1685
+        .faceId = 433   ' Summary/Report icon
+    End With
+    
+    ' Add "Show Expense Outliers" item - Statistical Analysis
+    Set btnOutliers = dropdown.Controls.Add(Type:=msoControlButton)
+    With btnOutliers
+        .caption = "View Expense Outliers"
+        .onAction = "HighlightAndExportExpenseOutliers"
+        .faceId = 463   ' Analysis/Statistics icon
     End With
 End Sub
 
@@ -634,7 +648,7 @@ Sub CreateDonationsAggregateSilent()
     totalAmount = 0 ' Initialize total for calculation
     
     ' Loop through dictionary and paste organization data
-    For Each dictKey In orgDict.Keys
+    For Each dictKey In orgDict.keys
         ' Extract original organization name (convert back from uppercase key)
         orgName = StrConv(dictKey, vbProperCase) ' Convert to proper case
         
